@@ -2,6 +2,7 @@
 
 import { ID, Query } from "node-appwrite";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { appwriteConfig } from "../appwrite/config";
@@ -107,4 +108,17 @@ export const getCurrentUser = async () => {
   if (user.total <= 0) return null;
 
   return parseStringify(user.documents[0]);
+};
+
+export const signOutUser = async () => {
+  const { account } = await createSessionClient();
+
+  try {
+    await account.deleteSession("current");
+    (await cookies()).delete("appwrite-session");
+  } catch (error) {
+    handleError(error, "Failed to sign out user");
+  } finally {
+    redirect("/sign-in");
+  }
 };
