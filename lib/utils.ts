@@ -116,10 +116,7 @@ export const formatDateTime = (isoString: string | null | undefined) => {
   return `${time}, ${day} ${month}`;
 };
 
-export const getFileIcon = (
-  extension: string | undefined,
-  type: FileType | string
-) => {
+export const getFileIcon = (extension: string | undefined, type: string) => {
   switch (extension) {
     // Document
     case "pdf":
@@ -189,6 +186,7 @@ export const constructDownloadUrl = (bucketFileId: string) => {
 };
 
 // DASHBOARD UTILS
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getUsageSummary = (totalSpace: any) => {
   return [
     {
