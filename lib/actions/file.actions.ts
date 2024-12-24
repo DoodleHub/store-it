@@ -9,17 +9,17 @@ import { appwriteConfig } from "../appwrite/config";
 import { constructFileUrl, getFileType, parseStringify } from "../utils";
 import { getCurrentUser } from "./user.actions";
 
+const handleError = (error: unknown, message: string) => {
+  console.log(error, message);
+  throw error;
+};
+
 interface UploadFileProps {
   file: File;
   ownerId: string;
   accountId: string;
   path: string;
 }
-
-const handleError = (error: unknown, message: string) => {
-  console.log(error, message);
-  throw error;
-};
 
 export const uploadFile = async ({
   file,
@@ -99,5 +99,37 @@ export const getFiles = async () => {
     return parseStringify(files);
   } catch (error) {
     handleError(error, "Failed to get files");
+  }
+};
+
+interface RenameFileProps {
+  fileId: string;
+  name: string;
+  extension: string;
+  path: string;
+}
+
+export const renameFile = async ({
+  fileId,
+  name,
+  extension,
+  path,
+}: RenameFileProps) => {
+  const { databases } = await createAdminClient();
+
+  try {
+    const newName = `${name}.${extension}`;
+
+    const updatedFile = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      fileId,
+      { name: newName }
+    );
+
+    revalidatePath(path);
+    return parseStringify(updatedFile);
+  } catch (error) {
+    handleError(error, "Failed to rename file");
   }
 };
