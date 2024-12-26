@@ -29,6 +29,7 @@ import { Button } from "./ui/button";
 import { renameFile } from "@/lib/actions/file.actions";
 import { constructDownloadUrl } from "@/lib/utils";
 import { actionsDropdownItems } from "@/constants";
+import { FileDetails } from "./ActionsModalContent";
 
 interface ActionType {
   label: string;
@@ -87,6 +88,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               onChange={(e) => setName(e.target.value)}
             />
           )}
+          {value === "details" && <FileDetails file={file} />}
         </DialogHeader>
         {["rename", "delete", "share"].includes(value) && (
           <DialogFooter className="flex flex-col gap-3 md:flex-row">
