@@ -16,6 +16,7 @@ const Search = () => {
   const [query, setQuery] = useState("");
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("query") || "";
+  const sort = searchParams.get("sort") || "";
   const [results, setResults] = useState<Models.Document[]>([]);
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -27,7 +28,7 @@ const Search = () => {
       if (debouncedQuery.length === 0) {
         setResults([]);
         setOpen(false);
-        return router.push(path.replace(searchParams.toString(), ""));
+        return router.push(`${path}${sort ? `?sort=${sort}` : ""}`);
       }
 
       const files = await getFiles({ types: [], searchText: debouncedQuery });
@@ -35,8 +36,10 @@ const Search = () => {
       setOpen(true);
     };
 
-    fetchFiles();
-  }, [debouncedQuery, path, router, searchParams]);
+    if (debouncedQuery !== searchQuery) {
+      fetchFiles();
+    }
+  }, [debouncedQuery, path, router, searchParams, sort, searchQuery]);
 
   useEffect(() => {
     if (!searchQuery) {
@@ -49,7 +52,7 @@ const Search = () => {
     setResults([]);
 
     router.push(
-      `/${file.type === "video" || file.type === "audio" ? "media" : file.type + "s"}?query=${query}`
+      `/${file.type === "video" || file.type === "audio" ? "media" : file.type + "s"}?query=${query}${sort ? `&sort=${sort}` : ""}`
     );
   };
 
